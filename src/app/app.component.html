@@ -32,26 +32,28 @@
             <th>Name</th>
             <th>Description</th>
             <th>Price</th>
-            <th></th>
+            <th>Delete</th>
             <th></th>
           </tr>
           <tr *ngIf="allProducts.length < 1 && !isFetching">
             <td colspan="5">No Products Available!</td>
           </tr>
           <tr *ngIf="errorMessage">
-            <td colspan="5">{{errorMessage}}</td>
+            <td colspan="5" style="color: red;">{{errorMessage}}</td>
           </tr>
           <tr *ngIf="isFetching && !errorMessage">
             <td colspan="5">Loading....</td>
           </tr>
-          <tr *ngFor="let prod of allProducts; let i = index">
-            <td>{{i + 1}}</td>
-            <td>{{prod.pName}}</td>
-            <td>{{prod.desc}}</td>
-            <td>${{prod.price}}</td>
-            <!-- <td><button class="btn-delete" (click)="onDeleteProduct(prod.id)">Delete</button></td>
-            <td><button class="btn-edit" (click)="onEditClicked(prod.id)">Edit</button></td> -->
-          </tr>
+          <ng-container *ngIf="!isFetching">
+            <tr *ngFor="let prod of allProducts; let i = index">
+              <td>{{i + 1}}</td>
+              <td>{{prod.pName}}</td>
+              <td>{{prod.desc}}</td>
+              <td>${{prod.price}}</td>
+              <td><button class="btn-delete" (click)="onDeleteProduct(prod.id)">Delete</button></td>
+              <td><button class="btn-edit" (click)="onEditClicked(prod.id)">Edit</button></td>
+            </tr>
+          </ng-container>
         </table>
         <hr>
         <div class="action-btn-container">

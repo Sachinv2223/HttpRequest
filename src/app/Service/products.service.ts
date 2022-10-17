@@ -6,7 +6,7 @@ import { Product } from '../model/products';
 
 @Injectable({ providedIn: "root" })
 export class ProductService {
-    error = new Subject<string>();
+    errorSubj = new Subject<string>();
     constructor(private http: HttpClient) {
 
     }
@@ -16,21 +16,17 @@ export class ProductService {
         console.log(products);
         const headers = new HttpHeaders({ 'myHeader': 'procademy' });
         this.http.post<{ name: string }>(
-            'https://angularbyprocademy-default-rtdb.firebaseio.com/products.json',
+            'https://demoserver2223-default-rtdb.firebaseio.com/products.json',
             products, { headers: headers })
             .subscribe({
                 next: (res) => {
                     console.log(res);
                 },
                 error: (err) => {
-                    this.error.next(err.message);
+                    this.errorSubj.next(`ERROR: ${err.status} - ${err.statusText
+                        } - ${err.error['error']}.`);
                 }
             });
-        //         .subscribe((res) => {
-        //             console.log(res);
-        //         }, (err) => {
-        //             this.error.next(err.message);
-        //         });
     }
 
     //fetch products from database
@@ -40,20 +36,27 @@ export class ProductService {
             .set('Access-Control-Allow-Origin', '*')
 
         const params = new HttpParams()
-            .set('print', 'pretty').set('pageNum', 1);
-        return this.http.get<{ [key: string]: Product }>('https://angularbyprocademy-default-rtdb.firebaseio.com/products.json',
-            { 'headers': header, params: params })
+            .set('print', 'pretty')
+            .set('pageNum', 1);
+
+        return this.http.get<{ [key: string]: Product }>('https://demoserver2223-default-rtdb.firebaseio.com/products.json',
+            { headers: header, params: params })
             .pipe(map((res) => {
                 const products = [];
-                for (const key in res) {
-                    if (res.hasOwnProperty(key)) {
-                        products.push({ ...res[key], id: key })
-                    }
+                if (res != null) {
+                    for (const [key, value] of Object.entries(res)) {
+                        products.push({ ...value, id: key });
+                    };
                 }
+                // for (const key in res) {
+                //     if (res.hasOwnProperty(key)) {
+                //         products.push({ ...res[key], id: key })
+                //     }
+                // }
                 return products;
             }), catchError((err) => {
                 //write the logic for logging error
-                return throwError(err);
+                return throwError(() => (err));
             }))
     }
 
@@ -62,18 +65,18 @@ export class ProductService {
         let header = new HttpHeaders();
         header = header.append('myHeader1', 'Value1');
         header = header.append('myHeader2', 'Value2');
-        this.http.delete('https://angularbyprocademy-default-rtdb.firebaseio.com/products/' + id + '.json', { headers: header })
+        this.http.delete('https://demoserver2223-default-rtdb.firebaseio.com/products/' + id + '.json', { headers: header })
             .subscribe();
     }
 
     //delete all products from database
     deleteAllProducts() {
-        this.http.delete('https://angularbyprocademy-default-rtdb.firebaseio.com/products.json')
+        this.http.delete('https://demoserver2223-default-rtdb.firebaseio.com/products.json')
             .subscribe();
     }
 
     updateProduct(id: string, value: Product) {
-        this.http.put('https://angularbyprocademy-default-rtdb.firebaseio.com/products/' + id + '.json', value)
+        this.http.put('https://demoserver2223-default-rtdb.firebaseio.com/products/' + id + '.json', value)
             .subscribe();
     }
 }
