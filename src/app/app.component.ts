@@ -48,11 +48,12 @@ export class AppComponent {
     this.http.post<{ name: string }>('https://demoserver2223-default-rtdb.firebaseio.com/products.json', JSON.stringify(products), { headers: header }).subscribe({
       next: (res) => {
         // console.log(res);
+        this.onProductsFetch();
       }
     });
-    setTimeout(() => {
-      this.onProductsFetch();
-    }, 1000);
+    // setTimeout(() => {
+    //   this.onProductsFetch();
+    // }, 1000);
   }
 
   private fetchProducts() {
